@@ -1,26 +1,37 @@
-package repository;
+package Repositorio;
 
 import java.io.*;
-import java.util.*;
 
 public class Repositorio {
-    private static final String DB_FILE = "estoque_db.dat";
+    // Nome do arquivo onde o estado do sistema será salvo
+    private static final String NOME_ARQUIVO = "estoque_data.ser";
 
-    public static void salvar(Object obj) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DB_FILE))) {
-            oos.writeObject(obj);
+    /**
+     * Salva o objeto passado (o estado da classe Main) no disco.
+     * @param objeto O objeto a ser serializado e salvo.
+     */
+    public static void salvar(Object objeto) {
+        try (FileOutputStream fos = new FileOutputStream(NOME_ARQUIVO);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(objeto);
         } catch (IOException e) {
-            System.err.println("Erro ao salvar dados: " + e.getMessage());
+            System.err.println("Erro ao salvar os dados: " + e.getMessage());
         }
     }
 
+    /**
+     * Carrega o objeto (o estado da classe Main) do disco.
+     * @return O objeto desserializado ou null se houver erro/o arquivo não existir.
+     */
     public static Object carregar() {
-        File f = new File(DB_FILE);
-        if (!f.exists()) return null;
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DB_FILE))) {
+        try (FileInputStream fis = new FileInputStream(NOME_ARQUIVO);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
             return ois.readObject();
+        } catch (FileNotFoundException e) {
+            // Arquivo não encontrado, é a primeira execução.
+            return null;
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Erro ao carregar dados: " + e.getMessage());
+            System.err.println("Erro ao carregar os dados: " + e.getMessage());
             return null;
         }
     }

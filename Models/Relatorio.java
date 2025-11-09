@@ -1,52 +1,67 @@
-package models;
+package Models;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Relatorio implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    private LocalDateTime dataGeracao;
-    private String tipo;
+public class Relatorio {
+    private String titulo;
     private String conteudo;
 
-    public Relatorio(String tipo, String conteudo) {
-        this.dataGeracao = LocalDateTime.now();
-        this.tipo = tipo;
+    private Relatorio(String titulo, String conteudo) {
+        this.titulo = titulo;
         this.conteudo = conteudo;
     }
 
-    public String gerar() {
-        DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return String.format("Relatorio: %s\nGerado em: %s\n\n%s", tipo, dataGeracao.format(f), conteudo);
-    }
-
-    @Override
-    public String toString() {
-        return gerar();
-    }
-
-    // Fábrica de relatório simples
+    // Relatório de Estoque Completo
     public static Relatorio relatorioEstoque(List<Produto> produtos) {
         StringBuilder sb = new StringBuilder();
-        double total = 0;
+        sb.append("\n==========================================\n");
+        sb.append("      RELATÓRIO COMPLETO DE ESTOQUE       \n");
+        sb.append("==========================================\n");
+        
+        double valorTotalCusto = 0;
+        int totalItens = 0;
+
         for (Produto p : produtos) {
             sb.append(p.toString()).append("\n");
-            total += p.calcularValorTotal();
+            valorTotalCusto += p.calcularValorTotal();
+            totalItens += p.getQuantidade();
         }
-        sb.append(String.format("\nValor total do estoque: R$ %.2f\n", total));
+
+        sb.append("\n------------------------------------------\n");
+        sb.append(String.format("Total de Produtos Distintos: %d\n", produtos.size()));
+        sb.append(String.format("Total de Unidades em Estoque: %d\n", totalItens));
+        sb.append(String.format("Valor Total de Custo do Estoque: R$ %.2f\n", valorTotalCusto));
+        sb.append("==========================================\n");
+
         return new Relatorio("Estoque Completo", sb.toString());
     }
 
+    // Relatório de Baixo Estoque
     public static Relatorio relatorioBaixoEstoque(List<Produto> produtos) {
+        List<Produto> baixos = produtos.stream()
+            .filter(Produto::verificarEstoqueMinimo)
+            .collect(Collectors.toList());
+
         StringBuilder sb = new StringBuilder();
-        for (Produto p : produtos) {
-            if (p.verificarEstoqueMinimo()) {
-                sb.append(p.toString()).append("\n");
+        sb.append("\n==========================================\n");
+        sb.append("       RELATÓRIO DE BAIXO ESTOQUE         \n");
+        sb.append("==========================================\n");
+        
+        if (baixos.isEmpty()) {
+            sb.append("Nenhum produto abaixo do estoque mínimo.\n");
+        } else {
+            for (Produto p : baixos) {
+                sb.append(String.format("Cód: %d | Produto: %s | Qtd Atual: %d | Mínimo: %d\n",
+                                        p.getCodigo(), p.getNome(), p.getQuantidade(), p.getEstoqueMinimo()));
             }
         }
-        return new Relatorio("Produtos com Baixo Estoque", sb.toString());
+        sb.append("==========================================\n");
+
+        return new Relatorio("Baixo Estoque", sb.toString());
+    }
+
+    public String gerar() {
+        return conteudo;
     }
 }
