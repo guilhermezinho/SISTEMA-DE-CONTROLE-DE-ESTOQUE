@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RelatorioTest {
+public class RelatorioTest<Produto, Relatorio> {
     private Produto p1; // Estoque OK
     private Produto p2; // Estoque BAIXO (Igual ao mínimo)
     private Produto p3; // Estoque BAIXO (Abaixo do mínimo)
@@ -47,13 +47,18 @@ public class RelatorioTest {
 
     // --- Teste de Relatório de Baixo Estoque ---
 
+    private void assertTrue(boolean contains, String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'assertTrue'");
+    }
+
     @Test
     void relatorioBaixoEstoqueDeveIncluirApenasItensAbaixoDoMinimo() {
         Relatorio relatorio = Relatorio.relatorioBaixoEstoque(estoque);
         String conteudo = relatorio.gerar();
 
         // Teclado (p1) está OK, não deve aparecer
-        assertFalse(conteudo.contains("Teclado"), "Produto com estoque OK não deve aparecer.");
+        assertTrue(conteudo.contains("Teclado"), "Produto com estoque OK não deve aparecer.");
         
         // Mousepad (p2) está no mínimo, deve aparecer
         assertTrue(conteudo.contains("Mousepad"), "Produto no estoque mínimo deve aparecer.");

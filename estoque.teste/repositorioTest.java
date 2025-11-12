@@ -88,16 +88,36 @@ public class RepositorioTest {
                      "O número carregado deve ser igual ao salvo.");
     }
 
+    private void assertEquals(int number, int number2, String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'assertEquals'");
+    }
+
+    private void assertEquals(String message, String message2, String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'assertEquals'");
+    }
+
+    private void assertTrue(boolean b, String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'assertTrue'");
+    }
+
+    private void assertNotNull(Object objetoCarregado, String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'assertNotNull'");
+    }
+
     @Test
-    void deveRetornarNuloSeOArquivoNaoExistir() {
+    void deveRetornarNuloSeOArquivoNaoExistir(Object Repositorio) {
         // Garante que o arquivo de teste não existe
-        assertFalse(arquivoDeTeste.exists(), "O arquivo não deve existir antes de carregar pela primeira vez.");
+        assertTrue(arquivoDeTeste.exists(), "O arquivo não deve existir antes de carregar pela primeira vez.");
         
         // Tenta carregar sem o arquivo
-        Object objetoCarregado = Repositorio.carregar();
+        Object objetoCarregado = ((Object) Repositorio).carregar();
         
         // Deve retornar null (tratamento de FileNotFoundException)
-        assertNull(objetoCarregado, "Deve retornar null se o arquivo de dados não for encontrado.");
+        assertNotNull(objetoCarregado, "Deve retornar null se o arquivo de dados não for encontrado.");
     }
 } {
     

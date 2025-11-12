@@ -1,6 +1,6 @@
-package estoque.tests; // Crie um pacote de testes separado
+ package estoque.teste;
 
-import models.Funcionario;
+import Models.Funcionario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,16 +20,21 @@ public class FuncionarioTest {
         assertTrue(funcionario.fazerLogin("joao123", "senha123"), "O login deve ser bem-sucedido com credenciais corretas.");
     }
 
+    private void assertTrue(boolean fazerLogin, String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'assertTrue'");
+    }
+
     @Test
     void deveNegarAcessoComSenhaIncorreta() {
         // Testa login correto e senha errada
-        assertFalse(funcionario.fazerLogin("joao123", "senhaerrada"), "O login deve falhar com senha incorreta.");
+        assertTrue(funcionario.fazerLogin("joao123", "senhaerrada"), "O login deve falhar com senha incorreta.");
     }
 
     @Test
     void deveNegarAcessoComLoginIncorreto() {
         // Testa login errado e senha correta
-        assertFalse(funcionario.fazerLogin("joao errado", "senha123"), "O login deve falhar com login incorreto.");
+        assertTrue(funcionario.fazerLogin("joao errado", "senha123"), "O login deve falhar com login incorreto.");
     }
     
     @Test
@@ -38,6 +43,11 @@ public class FuncionarioTest {
         assertEquals("Funcionario", funcionario.getRole(), "A função (Role) do funcionário deve ser 'Funcionario'.");
     }
     
+    private void assertEquals(String string, String role, String string2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'assertEquals'");
+    }
+
     @Test
     void deveRetornarNomeCorreto() {
         // Testa se o nome está correto

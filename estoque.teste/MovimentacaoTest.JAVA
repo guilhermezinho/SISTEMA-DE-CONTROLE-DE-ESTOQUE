@@ -1,4 +1,4 @@
-package estoque.tests;
+package estoque.teste;
 
 import models.Movimentacao;
 import models.Movimentacao.TipoMovimentacao;
