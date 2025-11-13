@@ -7,7 +7,7 @@ public class Estoque implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int idEstoque;
-    private Produto produto; // Referência ao Produto que está em estoque
+    private Produto produto; 
     private String localizacao;
     private int nivelMinimo;
     private int quantidadeAtual;
@@ -20,8 +20,6 @@ public class Estoque implements Serializable {
         this.quantidadeAtual = quantidadeAtual;
     }
 
-    // --- Métodos de Lógica de Estoque (Movidos de Produto) ---
-
     public void atualizarQuantidade(int delta) {
         this.quantidadeAtual += delta;
     }
@@ -29,8 +27,6 @@ public class Estoque implements Serializable {
     public boolean verificarEstoqueMinimo() {
         return this.quantidadeAtual <= this.nivelMinimo;
     }
-
-    // --- Getters e Setters ---
 
     public int getIdEstoque() {
         return idEstoque;
@@ -59,6 +55,10 @@ public class Estoque implements Serializable {
     public int getQuantidadeAtual() {
         return quantidadeAtual;
     }
+    public void setQuantidadeAtual(int quantidadeAtual) {
+        this.quantidadeAtual = quantidadeAtual;
+    }
+    
     
     @Override
     public String toString() {
@@ -67,19 +67,4 @@ public class Estoque implements Serializable {
             idEstoque, localizacao, quantidadeAtual, nivelMinimo, produto.getCodigo(), produto.getNome()
         );
     }
-
-    public static Object remove(int idEstoque2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'remove'");
-    }
-
-    public static void put(int idEstoque2, Estoque e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'put'");
-    }
-
-    public static Collection<Movimentacao> values() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'values'");
-    }
-}
+} 

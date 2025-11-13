@@ -1,6 +1,5 @@
 package Service;
 
-import models.Estoque;
 import Models.Funcionario;
 import Models.Movimentacao;
 import Models.Movimentacao.TipoMovimentacao;
@@ -8,7 +7,6 @@ import Models.Produto;
 import Models.Relatorio;
 import repository.EstoqueRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,19 +16,15 @@ public class EstoqueService {
     
     public EstoqueService(EstoqueRepository repository) {
         this.repository = repository;
-        // Inicia o funcionário padrão se o sistema estiver vazio
         if (repository.getFuncionarios().isEmpty()) {
             repository.adicionarFuncionario(new Funcionario(repository.getNextUserId(), "Funcionario Inicial", "func", "123"));
             System.out.println("\n*** ATENÇÃO: Sistema inicializado com Funcionário Padrão (Login: func | Senha: 123) ***");
         }
     }
-
-    // --- Lógica de Autenticação ---
     
     public Funcionario fazerLogin(String login, String senha) {
         // Busca o funcionário pelo login
         for (Funcionario f : repository.getFuncionarios()) {
-            // O método fazerLogin() está na classe Funcionario, mantendo SRP na Model.
             if (f.fazerLogin(login, senha)) {
                 return f;
             }
@@ -38,20 +32,13 @@ public class EstoqueService {
         return null;
     }
 
-    // --- Lógica CRUD de Produtos ---
-
-    public Produto cadastrarProduto(String nome, String descricao, String categoria, double valorUnitario, String localizacao, int quantidadeInicial, int estoqueMinimo) {
+    public Produto cadastrarProduto(String nome, String descricao, String categoria, int quantidadeInicial, double valorUnitario, int estoqueMinimo) {
         // 1. Cria o Produto
         int novoCodigo = repository.getNextProdutoId();
-        Produto p = new Produto(novoCodigo, nome, descricao, categoria, valorUnitario);
+        Produto p = new Produto(novoCodigo, nome, descricao, categoria, quantidadeInicial, valorUnitario, estoqueMinimo);
         
-        // 2. Cria o Estoque e associa ao Produto
-        int idEstoque = repository.getNextProdutoId();
-        Estoque e = new Estoque(idEstoque, p, localizacao, estoqueMinimo, quantidadeInicial);
-        
-        // 3. Persiste ambos
+        // 2. Persiste o produto
         repository.adicionarProduto(p);
-        repository.adicionarEstoque(e);
         
         return p;
     }
@@ -65,23 +52,11 @@ public Models.Estoque buscarEstoque(int codigoProduto) {
     public boolean editarProduto(int codigo, String nome, String descricao, String categoria, Double valorUnitario, Integer estoqueMinimo) {
         Produto p = repository.buscarProduto(codigo);
         if (p == null) return false;
-        
-        // Aplica as atualizações apenas se o valor não for null/vazio.
         if (nome != null && !nome.isEmpty()) p.setNome(nome);
         if (descricao != null && !descricao.isEmpty()) p.setDescricao(descricao);
         if (categoria != null && !categoria.isEmpty()) p.setCategoria(categoria);
         if (valorUnitario != null) p.setValorUnitario(valorUnitario);
         if (estoqueMinimo != null) p.setEstoqueMinimo(estoqueMinimo);
-        
-        return true;
-    }
-    public boolean editarEstoque(int codigoProduto, String localizacao, Integer estoqueMinimo) {
-        // Lógica de edição de dados de estoque
-        Estoque e = repository.buscarEstoquePorProduto(codigoProduto);
-        if (e == null) return false;
-
-        if (localizacao != null && !localizacao.isEmpty()) e.setLocalizacao(localizacao);
-        if (estoqueMinimo != null) e.setNivelMinimo(estoqueMinimo);
         
         return true;
     }
@@ -97,7 +72,7 @@ public Models.Estoque buscarEstoque(int codigoProduto) {
         if (p == null) throw new Exception("Produto não encontrado.");
         if (quantidade <= 0) throw new Exception("Quantidade de entrada deve ser positiva.");
 
-        // Atualiza a Model e registra a Movimentacao
+        // Atualiza e registra a Movimentacao
         p.atualizarQuantidade(quantidade);
         Movimentacao m = new Movimentacao(repository.getNextMovId(), TipoMovimentacao.ENTRADA, quantidade, p, observacao);
         repository.adicionarMovimentacao(m);
@@ -109,12 +84,12 @@ public Models.Estoque buscarEstoque(int codigoProduto) {
         if (p == null) throw new Exception("Produto não encontrado.");
         if (quantidade <= 0) throw new Exception("Quantidade de saída deve ser positiva.");
         
-        // **Melhoria**: Validação de estoque como lógica de negócio
+        //  Validação de estoque como lógica de negócio
         if (quantidade > p.getQuantidade()) {
             throw new Exception("Quantidade insuficiente em estoque. Disponível: " + p.getQuantidade());
         }
 
-        // Atualiza a Model e registra a Movimentacao
+        // Atualiza e registra a Movimentacao
         p.atualizarQuantidade(-quantidade);
         Movimentacao m = new Movimentacao(repository.getNextMovId(), TipoMovimentacao.SAIDA, quantidade, p, observacao);
         repository.adicionarMovimentacao(m);
@@ -125,9 +100,6 @@ public Models.Estoque buscarEstoque(int codigoProduto) {
 
     public List<Produto> listarProdutos() {
         return repository.listarProdutos();
-    }
-    public List<Estoque> listarEstoquesComDetalhes() {
-        return repository.listarEstoques();
     }
     
     public double calcularValorTotalEstoque() {
@@ -147,7 +119,7 @@ public Models.Estoque buscarEstoque(int codigoProduto) {
         } else if ("2".equals(tipo)) {
             return Relatorio.relatorioBaixoEstoque(produtosList);
         }
-        return null; // Caso contrário, o relatório será gerado na Main
+        return null; 
     }
 
     public List<Produto> checarAlertas() {

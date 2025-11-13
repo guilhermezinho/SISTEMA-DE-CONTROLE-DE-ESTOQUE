@@ -1,6 +1,6 @@
 package repository;
 
-import Models.Estoque;
+import Models.Estoque; 
 import Models.Funcionario;
 import Models.Movimentacao;
 import Models.Produto;
@@ -8,47 +8,23 @@ import repository.Repositorio;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class EstoqueRepository implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // --- Coleções de Dados ---
     private Map<Integer, Produto> produtos = new HashMap<>();
+    private Map<Integer, Estoque> estoques = new HashMap<>(); 
     private List<Movimentacao> movimentacoes = new ArrayList<>();
     private List<Funcionario> funcionarios = new ArrayList<>();
 
-    // --- Contadores para IDs ---
+    // --- Contadores 
     private int nextProdutoId = 1;
+    private int nextEstoqueId = 1; 
     private int nextMovId = 1;
     private int nextUserId = 1;
-    private int nextEstoqueId = 1;
-    private EstoqueRepository() {} // Construtor privado
-
-    // --- Persistência (Métodos estáticos e públicos) ---
-
-    public List<Estoque> listarEstoques() { 
-        return new ArrayList<>( Estoques.values());
-    }
-
-    public Estoque buscarEstoquePorProduto(int codigoProduto) { 
-        return Estoques.values().stream()
-                .filter(e -> e.getProduto().getCodigo() == codigoProduto)
-                .findFirst()
-                .orElse(null);
-    }
     
-    public void adicionarEstoque(Service.Estoque e) { 
-          Estoque.put(e.getIdEstoque(), e);
-    }
-
-    public boolean removerEstoquePorProduto(int codigoProduto, Estoque estoque) {
-        Estoque e = buscarEstoquePorProduto(codigoProduto);
-        if (e != null) {
-            return estoque.remove(e.getIdEstoque()) != null;
-        }
-        return false;
-    }
+    private EstoqueRepository() {} 
     public static EstoqueRepository carregar() {
         Object o = Repositorio.carregar();
         if (o instanceof EstoqueRepository) {
@@ -63,10 +39,13 @@ public class EstoqueRepository implements Serializable {
         Repositorio.salvar(this);
     }
     
-    // --- Gerenciamento de IDs ---
 
     public int getNextProdutoId() {
         return nextProdutoId++;
+    }
+
+    public int getNextEstoqueId() {
+        return nextEstoqueId++;
     }
 
     public int getNextMovId() {
@@ -77,10 +56,30 @@ public class EstoqueRepository implements Serializable {
         return nextUserId++;
     }
 
-    // --- Getters e Lógica CRUD para o Service ---
+    public List<Estoque> listarEstoques() { 
+        return new ArrayList<>(estoques.values()); 
+    }
 
+    public Estoque buscarEstoquePorProduto(int codigoProduto) { 
+        // Busca o objeto Estoque que contém a referência ao Produto
+        return estoques.values().stream() 
+                .filter(e -> e.getProduto().getCodigo() == codigoProduto)
+                .findFirst()
+                .orElse(null);
+    }
+    
+    public void adicionarEstoque(Estoque e) { 
+        estoques.put(e.getIdEstoque(), e); 
+    }
 
-
+    public boolean removerEstoquePorProduto(int codigoProduto) { 
+        Estoque e = buscarEstoquePorProduto(codigoProduto);
+        if (e != null) {
+            // Remove o Estoque usando sua chave (ID) no Map
+            return estoques.remove(e.getIdEstoque()) != null; 
+        }
+        return false;
+    }
     
     public List<Produto> listarProdutos() {
         return new ArrayList<>(produtos.values());
@@ -120,10 +119,5 @@ public class EstoqueRepository implements Serializable {
     
     public List<Movimentacao> listarMovimentacoes() {
         return movimentacoes;
-    }
-
-    public void adicionarEstoque(Service.Estoque e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'adicionarEstoque'");
     }
 }
